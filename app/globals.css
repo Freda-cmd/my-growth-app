@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #888;
+  --border: #eaeaea;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --muted: #aaa;
+    --border: #222;
+  }
+}
+
+/* 全局重置 + 基础风格 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 标题更有层次 */
+h1, h2, h3 {
+  letter-spacing: -0.5px;
+  font-weight: 500;
+}
+
+/* 导航链接（升级版） */
+.nav-link {
+  position: relative;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--foreground);
+}
+
+/* 下划线动画 */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* 卡片通用风格（你Blog已经能用） */
+.card {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+/* 输入框统一风格 */
+textarea,
+input {
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+textarea:focus,
+input:focus {
+  border-color: #999;
+  outline: none;
+}
+
+/* 按钮风格（统一） */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.85;
+}
