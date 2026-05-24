@@ -16,7 +16,7 @@ export default function RootLayout({
 
         {/* 🌿 顶部导航 */}
         <nav className="fixed top-0 left-0 w-full flex justify-center gap-10 py-5 text-sm z-50 backdrop-blur-md bg-white/40">
-          <a href=" " className="hover:opacity-60 transition">首页</a >
+          <a href=" " className="hover:opacity-60 transition">首页</a>
           <a href="/daily" className="hover:opacity-60 transition">日常</a >
           <a href="/fitness" className="hover:opacity-60 transition">健身</a >
           <a href="/essay" className="hover:opacity-60 transition">随笔</a >
