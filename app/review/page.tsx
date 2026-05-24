@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 
 type RecordItem = {
@@ -147,7 +146,7 @@ export default function ReviewPage() {
       <div style={styles.overlay}></div>
 
       <div style={styles.content}>
-        <Navbar />
+      
 
         <h1 style={styles.title}>🧠 自我复盘系统</h1>
 

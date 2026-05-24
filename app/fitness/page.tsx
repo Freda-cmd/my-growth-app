@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
+
 import { supabase } from "@/lib/supabase";
 
 type Post = {
@@ -153,7 +153,7 @@ export default function FitnessPage() {
 
   return (
     <div style={styles.page}>
-      <Navbar />
+    
 
       <h1 style={styles.title}>🏋️ 健身记录</h1>
 

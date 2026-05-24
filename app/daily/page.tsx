@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
+
 
 type Post = {
   text: string;
@@ -144,7 +144,7 @@ export default function DailyPage() {
 
   return (
     <div style={styles.page}>
-      <Navbar />
+  
 
       <h1 style={styles.title}>🌸 日常生活记录</h1>
 

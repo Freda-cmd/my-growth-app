@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
 
 type Post = {
   content: string;
@@ -70,7 +69,7 @@ export default function EssayPage() {
       <div style={styles.bg}></div>
 
       <div style={styles.container}>
-        <Navbar />
+      
 
         <h1 style={styles.title}>📜 随笔</h1>
 
