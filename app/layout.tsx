@@ -14,12 +14,13 @@ export default function RootLayout({
     <html lang="zh">
       <body className="bg-[#f8f8f8] text-gray-800 antialiased">
 
-        {/* 🌿 顶部导航（极简 + 高级感） */}
+        {/* 🌿 顶部导航 */}
         <nav className="fixed top-0 left-0 w-full flex justify-center gap-10 py-5 text-sm z-50 backdrop-blur-md bg-white/40">
           <a href=" " className="hover:opacity-60 transition">首页</a >
-          <a href="/blog" className="hover:opacity-60 transition">日常</a >
+          <a href="/daily" className="hover:opacity-60 transition">日常</a >
           <a href="/fitness" className="hover:opacity-60 transition">健身</a >
-          <a href="/about" className="hover:opacity-60 transition">关于</a >
+          <a href="/essay" className="hover:opacity-60 transition">随笔</a >
+          <a href="/review" className="hover:opacity-60 transition">复盘</a >
         </nav>
 
         {/* 页面内容 */}

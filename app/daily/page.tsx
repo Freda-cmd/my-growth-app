@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 type Post = {
   text: string;
@@ -26,12 +27,17 @@ export default function DailyPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem("daily_posts");
-    if (saved) setPosts(JSON.parse(saved));
+
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    }
   }, []);
 
   useEffect(() => {
     const close = () => setMenu(null);
+
     window.addEventListener("click", close);
+
     return () => window.removeEventListener("click", close);
   }, []);
 
@@ -44,7 +50,9 @@ export default function DailyPage() {
         (file: any) =>
           new Promise<string>((res) => {
             const reader = new FileReader();
+
             reader.onload = () => res(reader.result as string);
+
             reader.readAsDataURL(file);
           })
       )
@@ -60,7 +68,9 @@ export default function DailyPage() {
         (file: any) =>
           new Promise<string>((res) => {
             const reader = new FileReader();
+
             reader.onload = () => res(reader.result as string);
+
             reader.readAsDataURL(file);
           })
       )
@@ -82,12 +92,14 @@ export default function DailyPage() {
 
     if (editingIndex !== null) {
       newPosts[editingIndex] = newPost;
+
       setEditingIndex(null);
     } else {
       newPosts = [newPost, ...posts];
     }
 
     setPosts(newPosts);
+
     localStorage.setItem("daily_posts", JSON.stringify(newPosts));
 
     setText("");
@@ -98,30 +110,42 @@ export default function DailyPage() {
   // 删除整条
   const deletePost = (index: number) => {
     const ok = confirm("确定删除这条记录吗？");
+
     if (!ok) return;
 
     const newPosts = posts.filter((_, i) => i !== index);
+
     setPosts(newPosts);
+
     localStorage.setItem("daily_posts", JSON.stringify(newPosts));
   };
 
   // 编辑整条
   const editPost = (index: number) => {
     const p = posts[index];
+
     setText(p.text);
     setImages(p.images);
     setVideos(p.videos);
+
     setEditingIndex(index);
   };
 
-  // 右键菜单（统一作用于整条记录）
+  // 右键菜单
   const handleContextMenu = (e: any, index: number) => {
     e.preventDefault();
-    setMenu({ x: e.clientX, y: e.clientY, index });
+
+    setMenu({
+      x: e.clientX,
+      y: e.clientY,
+      index,
+    });
   };
 
   return (
     <div style={styles.page}>
+      <Navbar />
+
       <h1 style={styles.title}>🌸 日常生活记录</h1>
 
       {/* 输入区 */}
@@ -134,8 +158,19 @@ export default function DailyPage() {
         />
 
         <div style={{ display: "flex", gap: "10px" }}>
-          <input type="file" multiple accept="image/*" onChange={handleImages} />
-          <input type="file" multiple accept="video/*" onChange={handleVideos} />
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImages}
+          />
+
+          <input
+            type="file"
+            multiple
+            accept="video/*"
+            onChange={handleVideos}
+          />
         </div>
 
         {/* 预览 */}
@@ -201,11 +236,23 @@ export default function DailyPage() {
             zIndex: 999,
           }}
         >
-          <div style={styles.menuItem} onClick={() => editPost(menu.index)}>
+          <div
+            style={styles.menuItem}
+            onClick={() => {
+              editPost(menu.index);
+              setMenu(null);
+            }}
+          >
             ✏️ 编辑
           </div>
 
-          <div style={styles.menuItem} onClick={() => deletePost(menu.index)}>
+          <div
+            style={styles.menuItem}
+            onClick={() => {
+              deletePost(menu.index);
+              setMenu(null);
+            }}
+          >
             🗑 删除
           </div>
         </div>

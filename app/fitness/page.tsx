@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
+import { supabase } from "@/lib/supabase";
 
 type Post = {
   text: string;
@@ -24,29 +26,46 @@ export default function FitnessPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem("fitness_posts");
-    if (saved) setPosts(JSON.parse(saved));
+
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    }
   }, []);
 
   useEffect(() => {
     const close = () => setMenu(null);
+
     window.addEventListener("click", close);
+
     return () => window.removeEventListener("click", close);
   }, []);
 
-  const handleUpload = (e: any) => {
+  // ☁️ 云端图片上传
+  const handleUpload = async (e: any) => {
     const files = Array.from(e.target.files);
 
-    const readers = files.map((file: any) => {
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(file);
-      });
-    });
+    const uploadedUrls: string[] = [];
 
-    Promise.all(readers).then((imgs) => {
-      setImages([...images, ...imgs]);
-    });
+    for (const file of files as File[]) {
+      const fileName = `${Date.now()}-${file.name}`;
+
+      const { error } = await supabase.storage
+        .from("images")
+        .upload(fileName, file);
+
+      if (error) {
+        console.log(error);
+        continue;
+      }
+
+      const { data } = supabase.storage
+        .from("images")
+        .getPublicUrl(fileName);
+
+      uploadedUrls.push(data.publicUrl);
+    }
+
+    setImages([...images, ...uploadedUrls]);
   };
 
   const handlePublish = () => {
@@ -54,13 +73,17 @@ export default function FitnessPage() {
 
     if (editingIndex !== null) {
       const updated = [...posts];
+
       updated[editingIndex] = {
         text,
         images,
         time: new Date().toLocaleString(),
       };
+
       setPosts(updated);
+
       localStorage.setItem("fitness_posts", JSON.stringify(updated));
+
       setEditingIndex(null);
     } else {
       const newPost: Post = {
@@ -68,8 +91,11 @@ export default function FitnessPage() {
         images,
         time: new Date().toLocaleString(),
       };
+
       const newPosts = [newPost, ...posts];
+
       setPosts(newPosts);
+
       localStorage.setItem("fitness_posts", JSON.stringify(newPosts));
     }
 
@@ -81,7 +107,9 @@ export default function FitnessPage() {
     if (!confirm("确定删除这条记录？")) return;
 
     const newPosts = posts.filter((_, i) => i !== index);
+
     setPosts(newPosts);
+
     localStorage.setItem("fitness_posts", JSON.stringify(newPosts));
   };
 
@@ -89,17 +117,22 @@ export default function FitnessPage() {
     if (!confirm("删除这张图片？")) return;
 
     const newPosts = [...posts];
+
     newPosts[postIndex].images = newPosts[postIndex].images.filter(
       (_, i) => i !== imgIndex
     );
+
     setPosts(newPosts);
+
     localStorage.setItem("fitness_posts", JSON.stringify(newPosts));
   };
 
   const handleEdit = (index: number) => {
     const post = posts[index];
+
     setText(post.text);
     setImages(post.images);
+
     setEditingIndex(index);
   };
 
@@ -109,6 +142,7 @@ export default function FitnessPage() {
     imgIndex?: number
   ) => {
     e.preventDefault();
+
     setMenu({
       x: e.clientX,
       y: e.clientY,
@@ -119,6 +153,8 @@ export default function FitnessPage() {
 
   return (
     <div style={styles.page}>
+      <Navbar />
+
       <h1 style={styles.title}>🏋️ 健身记录</h1>
 
       {/* 编辑区 */}
@@ -140,6 +176,7 @@ export default function FitnessPage() {
                 onClick={() => setPreviewImg(img)}
                 style={styles.img}
               />
+
               <span
                 onClick={() =>
                   setImages(images.filter((_, index) => index !== i))
@@ -239,8 +276,16 @@ export default function FitnessPage() {
 }
 
 const styles: any = {
-  page: { background: "#eef4ff", minHeight: "100vh", padding: "40px" },
-  title: { fontSize: "28px", marginBottom: "20px" },
+  page: {
+    background: "#eef4ff",
+    minHeight: "100vh",
+    padding: "40px",
+  },
+
+  title: {
+    fontSize: "28px",
+    marginBottom: "20px",
+  },
 
   editor: {
     background: "#fff",
@@ -249,7 +294,11 @@ const styles: any = {
     marginBottom: "30px",
   },
 
-  textarea: { width: "100%", height: "100px", marginBottom: "10px" },
+  textarea: {
+    width: "100%",
+    height: "100px",
+    marginBottom: "10px",
+  },
 
   preview: {
     display: "flex",
@@ -283,7 +332,11 @@ const styles: any = {
     marginBottom: "20px",
   },
 
-  time: { color: "#888", marginTop: "10px", display: "block" },
+  time: {
+    color: "#888",
+    marginTop: "10px",
+    display: "block",
+  },
 
   menuItem: {
     padding: "10px 20px",
@@ -302,7 +355,10 @@ const styles: any = {
     alignItems: "center",
   },
 
-  bigImg: { maxWidth: "90%", maxHeight: "90%" },
+  bigImg: {
+    maxWidth: "90%",
+    maxHeight: "90%",
+  },
 
   close: {
     position: "absolute",

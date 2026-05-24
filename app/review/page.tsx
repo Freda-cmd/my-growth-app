@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 import { supabase } from "@/lib/supabase";
 
 type RecordItem = {
@@ -49,7 +50,7 @@ export default function ReviewPage() {
 
   // 创建目标
   const createGoal = async () => {
-    if (!title) return;
+    if (!title.trim()) return;
 
     const { error } = await supabase.from("review_goals").insert([
       {
@@ -66,11 +67,14 @@ export default function ReviewPage() {
     }
 
     setTitle("");
+
     fetchGoals();
   };
 
   // 添加记录
   const addRecord = async (goal: Goal) => {
+    if (!weight || !waist) return;
+
     const newRecord = {
       date: new Date().toLocaleDateString(),
       weight: Number(weight),
@@ -97,6 +101,25 @@ export default function ReviewPage() {
     fetchGoals();
   };
 
+  // 删除目标
+  const deleteGoal = async (id: string) => {
+    const ok = confirm("确定删除这个目标吗？");
+
+    if (!ok) return;
+
+    const { error } = await supabase
+      .from("review_goals")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    fetchGoals();
+  };
+
   // 导出 CSV
   const exportCSV = () => {
     let csv = "Goal,Date,Weight,Waist\n";
@@ -108,11 +131,14 @@ export default function ReviewPage() {
     });
 
     const blob = new Blob([csv], { type: "text/csv" });
+
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
+
     a.href = url;
     a.download = "fitness_data.csv";
+
     a.click();
   };
 
@@ -121,6 +147,8 @@ export default function ReviewPage() {
       <div style={styles.overlay}></div>
 
       <div style={styles.content}>
+        <Navbar />
+
         <h1 style={styles.title}>🧠 自我复盘系统</h1>
 
         {/* 创建目标 */}
@@ -144,20 +172,29 @@ export default function ReviewPage() {
         {/* 目标列表 */}
         {goals.map((g) => (
           <div key={g.id} style={styles.card}>
-            <h2>{g.title}</h2>
+            <div style={styles.cardTop}>
+              <h2 style={styles.goalTitle}>{g.title}</h2>
+
+              <button
+                style={styles.deleteBtn}
+                onClick={() => deleteGoal(g.id)}
+              >
+                删除
+              </button>
+            </div>
 
             {/* 输入数据 */}
             <div style={styles.recordBox}>
               <input
                 style={styles.smallInput}
-                placeholder="体重"
+                placeholder="体重 kg"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
               />
 
               <input
                 style={styles.smallInput}
-                placeholder="腰围"
+                placeholder="腰围 cm"
                 value={waist}
                 onChange={(e) => setWaist(e.target.value)}
               />
@@ -172,11 +209,17 @@ export default function ReviewPage() {
 
             {/* 数据显示 */}
             <div>
-              {g.records.map((r, idx) => (
-                <div key={idx} style={styles.record}>
-                  {r.date} ｜ {r.weight}kg ｜ {r.waist}cm
+              {g.records.length === 0 ? (
+                <div style={styles.empty}>
+                  暂无记录
                 </div>
-              ))}
+              ) : (
+                g.records.map((r, idx) => (
+                  <div key={idx} style={styles.record}>
+                    {r.date} ｜ {r.weight}kg ｜ {r.waist}cm
+                  </div>
+                ))
+              )}
             </div>
           </div>
         ))}
@@ -219,6 +262,7 @@ const styles: any = {
     display: "flex",
     gap: "10px",
     marginBottom: "20px",
+    flexWrap: "wrap",
   },
 
   input: {
@@ -228,6 +272,7 @@ const styles: any = {
     border: "none",
     background: "rgba(255,255,255,0.7)",
     fontSize: "16px",
+    minWidth: "220px",
   },
 
   button: {
@@ -259,6 +304,28 @@ const styles: any = {
     boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
   },
 
+  cardTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+
+  goalTitle: {
+    color: "#5b3b75",
+  },
+
+  deleteBtn: {
+    border: "none",
+    background: "#ff6b81",
+    color: "#fff",
+    padding: "8px 14px",
+    borderRadius: "10px",
+    cursor: "pointer",
+  },
+
   recordBox: {
     display: "flex",
     gap: "10px",
@@ -272,6 +339,7 @@ const styles: any = {
     borderRadius: "12px",
     border: "none",
     background: "rgba(255,255,255,0.8)",
+    minWidth: "120px",
   },
 
   smallButton: {
@@ -288,5 +356,10 @@ const styles: any = {
     padding: "10px",
     borderRadius: "10px",
     background: "rgba(255,255,255,0.5)",
+  },
+
+  empty: {
+    color: "#888",
+    marginTop: "10px",
   },
 };

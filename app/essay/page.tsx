@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Navbar from "@/components/Navbar";
 
 type Post = {
   content: string;
@@ -14,7 +15,10 @@ export default function EssayPage() {
 
   useEffect(() => {
     const saved = localStorage.getItem("essay_posts");
-    if (saved) setPosts(JSON.parse(saved));
+
+    if (saved) {
+      setPosts(JSON.parse(saved));
+    }
   }, []);
 
   const handlePublish = () => {
@@ -29,12 +33,14 @@ export default function EssayPage() {
 
     if (editIndex !== null) {
       newPosts[editIndex] = newPost;
+
       setEditIndex(null);
     } else {
       newPosts = [newPost, ...posts];
     }
 
     setPosts(newPosts);
+
     localStorage.setItem("essay_posts", JSON.stringify(newPosts));
 
     setText("");
@@ -42,24 +48,30 @@ export default function EssayPage() {
 
   const handleDelete = (index: number) => {
     const ok = confirm("是否删除这段江湖随笔？");
+
     if (!ok) return;
 
     const newPosts = posts.filter((_, i) => i !== index);
+
     setPosts(newPosts);
+
     localStorage.setItem("essay_posts", JSON.stringify(newPosts));
   };
 
   const handleEdit = (index: number) => {
     setText(posts[index].content);
+
     setEditIndex(index);
   };
 
   return (
     <div style={styles.page}>
-      {/* 背景水墨层 */}
+      {/* 水墨背景 */}
       <div style={styles.bg}></div>
 
       <div style={styles.container}>
+        <Navbar />
+
         <h1 style={styles.title}>📜 随笔</h1>
 
         {/* 输入区 */}
@@ -84,8 +96,19 @@ export default function EssayPage() {
             <small style={styles.time}>{p.time}</small>
 
             <div style={styles.actions}>
-              <button onClick={() => handleEdit(i)}>改</button>
-              <button onClick={() => handleDelete(i)}>删</button>
+              <button
+                onClick={() => handleEdit(i)}
+                style={styles.actionBtn}
+              >
+                改
+              </button>
+
+              <button
+                onClick={() => handleDelete(i)}
+                style={styles.actionBtn}
+              >
+                删
+              </button>
             </div>
           </div>
         ))}
@@ -109,7 +132,7 @@ const styles: any = {
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundImage: "url('6851c3696001e01435cc0c9642c58752.jpg')",
+    backgroundImage: "url('/6851c3696001e01435cc0c9642c58752.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     filter: "grayscale(100%) contrast(1.1)",
@@ -167,6 +190,7 @@ const styles: any = {
     fontSize: "15px",
     lineHeight: "2",
     color: "#222",
+    whiteSpace: "pre-wrap",
   },
 
   time: {
@@ -180,6 +204,13 @@ const styles: any = {
     marginTop: "10px",
     display: "flex",
     gap: "10px",
-    fontSize: "12px",
+  },
+
+  actionBtn: {
+    background: "transparent",
+    border: "1px solid rgba(0,0,0,0.2)",
+    padding: "4px 10px",
+    cursor: "pointer",
+    borderRadius: "6px",
   },
 };
