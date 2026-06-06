@@ -6,12 +6,14 @@ import { supabase } from "@/lib/supabase";
 type Post = {
   text: string;
   images: string[];
+  videos: string[];
   time: string;
 };
 
 export default function FitnessPage() {
   const [text, setText] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [videos, setVideos] = useState<string[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -50,7 +52,7 @@ export default function FitnessPage() {
     for (const file of files) {
       const fileName = `${Date.now()}-${file.name}`;
       const { error } = await supabase.storage.from("images").upload(fileName, file);
-      if (error) { console.log(error); continue; }
+      if (error) { alert("图片上传失败: " + error.message); continue; }
       const { data } = supabase.storage.from("images").getPublicUrl(fileName);
       uploadedUrls.push(data.publicUrl);
     }
@@ -58,23 +60,41 @@ export default function FitnessPage() {
     setUploading(false);
   };
 
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setUploading(true);
+
+    const uploadedUrls: string[] = [];
+    for (const file of files) {
+      const fileName = `videos/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from("images").upload(fileName, file);
+      if (error) { alert("视频上传失败: " + error.message); continue; }
+      const { data } = supabase.storage.from("images").getPublicUrl(fileName);
+      uploadedUrls.push(data.publicUrl);
+    }
+    setVideos([...videos, ...uploadedUrls]);
+    setUploading(false);
+  };
+
   const handlePublish = () => {
-    if (!text && images.length === 0) return;
+    if (!text && images.length === 0 && videos.length === 0) return;
 
     if (editingIndex !== null) {
       const updated = [...posts];
-      updated[editingIndex] = { text, images, time: new Date().toLocaleString() };
+      updated[editingIndex] = { text, images, videos, time: new Date().toLocaleString() };
       setPosts(updated);
       localStorage.setItem("fitness_posts", JSON.stringify(updated));
       setEditingIndex(null);
     } else {
-      const newPost: Post = { text, images, time: new Date().toLocaleString() };
+      const newPost: Post = { text, images, videos, time: new Date().toLocaleString() };
       const newPosts = [newPost, ...posts];
       setPosts(newPosts);
       localStorage.setItem("fitness_posts", JSON.stringify(newPosts));
     }
     setText("");
     setImages([]);
+    setVideos([]);
   };
 
   const deletePost = (index: number) => {
@@ -107,7 +127,8 @@ export default function FitnessPage() {
   const handleEdit = (index: number) => {
     const post = posts[index];
     setText(post.text);
-    setImages(post.images);
+    setImages(post.images || []);
+    setVideos(post.videos || []);
     setEditingIndex(index);
   };
 
@@ -138,6 +159,10 @@ export default function FitnessPage() {
             上传图片
             <input type="file" hidden multiple accept="image/*" onChange={handleUpload} />
           </label>
+          <label style={{ ...styles.uploadBtn, background: "#f0e6ff", color: "#7c3aed", borderColor: "#d8b4fe" }}>
+            上传视频
+            <input type="file" hidden multiple accept="video/*" onChange={handleVideoUpload} />
+          </label>
           {uploading && <span style={{ fontSize: "13px", color: "#888" }}>上传中...</span>}
         </div>
 
@@ -145,10 +170,15 @@ export default function FitnessPage() {
           {images.map((img, i) => (
             <div key={i} style={{ position: "relative" }}>
               <img src={img} onClick={() => setPreviewImg(img)} style={styles.img} />
-              <span
-                onClick={() => setImages(images.filter((_, index) => index !== i))}
-                style={styles.close}
-              >×</span>
+              <span onClick={() => setImages(images.filter((_, index) => index !== i))} style={styles.close}>×</span>
+              <a href={img} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
+            </div>
+          ))}
+          {videos.map((v, i) => (
+            <div key={i} style={{ position: "relative" }}>
+              <video src={v} controls style={styles.video} />
+              <span onClick={() => setVideos(videos.filter((_, index) => index !== i))} style={styles.close}>×</span>
+              <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
             </div>
           ))}
         </div>
@@ -158,7 +188,7 @@ export default function FitnessPage() {
         </button>
         {editingIndex !== null && (
           <button
-            onClick={() => { setEditingIndex(null); setText(""); setImages([]); }}
+            onClick={() => { setEditingIndex(null); setText(""); setImages([]); setVideos([]); }}
             style={styles.cancelBtn}
           >取消编辑</button>
         )}
@@ -179,13 +209,21 @@ export default function FitnessPage() {
 
           <div style={styles.preview}>
             {(p.images || []).map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                onClick={() => setPreviewImg(img)}
-                onContextMenu={(e) => handleContextMenu(e, index, i)}
-                style={styles.img}
-              />
+              <div key={i} style={{ position: "relative" }}>
+                <img
+                  src={img}
+                  onClick={() => setPreviewImg(img)}
+                  onContextMenu={(e) => handleContextMenu(e, index, i)}
+                  style={styles.img}
+                />
+                <a href={img} download style={styles.downloadBtn} title="下载" onClick={(e: any) => e.stopPropagation()}>⬇</a>
+              </div>
+            ))}
+            {(p.videos || []).map((v, i) => (
+              <div key={i} style={{ position: "relative" }}>
+                <video src={v} controls style={styles.video} />
+                <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => e.stopPropagation()}>⬇</a>
+              </div>
             ))}
           </div>
 
@@ -291,6 +329,28 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
     border: "1px solid #d0dff0",
     transition: "transform 0.2s",
+  },
+  video: {
+    width: "200px",
+    borderRadius: "10px",
+  },
+  downloadBtn: {
+    position: "absolute" as const,
+    bottom: "4px",
+    right: "4px",
+    background: "rgba(0,0,0,0.55)",
+    color: "#fff",
+    borderRadius: "50%",
+    width: "24px",
+    height: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "12px",
+    textDecoration: "none",
+    cursor: "pointer",
+    lineHeight: "24px",
+    textAlign: "center" as const,
   },
   close: {
     position: "absolute" as const,
