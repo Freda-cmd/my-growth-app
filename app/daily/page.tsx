@@ -60,6 +60,11 @@ export default function DailyPage() {
     return () => window.removeEventListener("click", close);
   }, []);
 
+  const safeName = (file: File) => {
+    const ext = file.name.split(".").pop();
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  };
+
   // 图片上传到 Supabase
   const handleImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -68,7 +73,7 @@ export default function DailyPage() {
 
     const uploaded: string[] = [];
     for (const file of files) {
-      const fileName = `${Date.now()}-${file.name}`;
+      const fileName = safeName(file);
       const { error } = await supabase.storage.from("images").upload(fileName, file);
       if (error) { alert("图片上传失败: " + error.message); console.log(error); continue; }
       const { data } = supabase.storage.from("images").getPublicUrl(fileName);
@@ -86,7 +91,7 @@ export default function DailyPage() {
 
     const uploaded: string[] = [];
     for (const file of files) {
-      const fileName = `videos/${Date.now()}-${file.name}`;
+      const fileName = `videos/${safeName(file)}`;
       const { error } = await supabase.storage.from("images").upload(fileName, file);
       if (error) { alert("视频上传失败: " + error.message); console.log(error); continue; }
       const { data } = supabase.storage.from("images").getPublicUrl(fileName);

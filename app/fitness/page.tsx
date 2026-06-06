@@ -43,6 +43,11 @@ export default function FitnessPage() {
     return () => window.removeEventListener("click", close);
   }, []);
 
+  const safeName = (file: File) => {
+    const ext = file.name.split(".").pop();
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -50,7 +55,7 @@ export default function FitnessPage() {
 
     const uploadedUrls: string[] = [];
     for (const file of files) {
-      const fileName = `${Date.now()}-${file.name}`;
+      const fileName = safeName(file);
       const { error } = await supabase.storage.from("images").upload(fileName, file);
       if (error) { alert("图片上传失败: " + error.message); continue; }
       const { data } = supabase.storage.from("images").getPublicUrl(fileName);
@@ -67,7 +72,7 @@ export default function FitnessPage() {
 
     const uploadedUrls: string[] = [];
     for (const file of files) {
-      const fileName = `videos/${Date.now()}-${file.name}`;
+      const fileName = `videos/${safeName(file)}`;
       const { error } = await supabase.storage.from("images").upload(fileName, file);
       if (error) { alert("视频上传失败: " + error.message); continue; }
       const { data } = supabase.storage.from("images").getPublicUrl(fileName);
