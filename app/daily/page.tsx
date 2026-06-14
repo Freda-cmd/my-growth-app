@@ -386,8 +386,11 @@ const styles: Record<string, React.CSSProperties> = {
     transition: "transform 0.2s",
   },
   video: {
-    width: "200px",
+    width: "240px",
+    height: "180px",
+    objectFit: "cover",
     borderRadius: "10px",
+    background: "#000",
   },
   closeBtn: {
     position: "absolute" as const,
