@@ -197,7 +197,7 @@ export default function DailyPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={styles.previewItem}>
-              <video src={v} controls preload="metadata" playsInline style={styles.video} />
+              <video src={v} controls width="320" height="240" preload="auto" playsInline style={styles.video} />
               <span onClick={() => setVideos(videos.filter((_, j) => j !== i))} style={styles.closeBtn}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载">⬇</a>
             </div>
@@ -251,7 +251,7 @@ export default function DailyPage() {
             ))}
             {p.videos.map((v, j) => (
               <div key={j} style={styles.previewItem}>
-                <video src={v} controls preload="metadata" playsInline style={styles.video} />
+                <video src={v} controls width="320" height="240" preload="auto" playsInline style={styles.video} />
                 <a href={v} download style={styles.downloadBtn} title="下载">⬇</a>
               </div>
             ))}

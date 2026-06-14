@@ -196,7 +196,7 @@ export default function FitnessPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={{ position: "relative" }}>
-              <video src={v} controls preload="metadata" playsInline style={styles.video} />
+              <video src={v} controls width="320" height="240" preload="auto" playsInline style={styles.video} />
               <span onClick={() => setVideos(videos.filter((_, index) => index !== i))} style={styles.close}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
             </div>
@@ -242,11 +242,7 @@ export default function FitnessPage() {
             {(p.videos || []).map((v, i) => (
               <div key={i} style={{ position: "relative" }}>
                 <video
-                  src={v}
-                  controls
-                  preload="metadata"
-                  playsInline
-                  onContextMenu={(e) => handleContextMenu(e, index, undefined, i)}
+                  src={v} controls width="320" height="240" preload="auto" playsInline onContextMenu={(e) => handleContextMenu(e, index, undefined, i)}
                   style={styles.video}
                 />
                 <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => e.stopPropagation()}>⬇</a>
