@@ -360,10 +360,9 @@ const styles: Record<string, React.CSSProperties> = {
     transition: "transform 0.2s",
   },
   video: {
-    width: "240px",
-    maxHeight: "200px",
+    maxWidth: "320px",
+    maxHeight: "240px",
     borderRadius: "10px",
-    background: "#000",
   },
   downloadBtn: {
     position: "absolute" as const,
