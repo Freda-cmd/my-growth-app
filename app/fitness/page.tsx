@@ -24,6 +24,7 @@ export default function FitnessPage() {
     y: number;
     postIndex: number;
     imgIndex?: number;
+    videoIndex?: number;
   } | null>(null);
 
   const [confirmState, setConfirmState] = useState<{
@@ -129,6 +130,20 @@ export default function FitnessPage() {
     });
   };
 
+  const deleteVideo = (postIndex: number, videoIndex: number) => {
+    setConfirmState({
+      show: true,
+      message: "确定删除这个视频吗？",
+      onConfirm: () => {
+        const newPosts = [...posts];
+        newPosts[postIndex].videos = newPosts[postIndex].videos.filter((_, i) => i !== videoIndex);
+        setPosts(newPosts);
+        localStorage.setItem("fitness_posts", JSON.stringify(newPosts));
+        setConfirmState({ show: false, message: "", onConfirm: () => {} });
+      },
+    });
+  };
+
   const handleEdit = (index: number) => {
     const post = posts[index];
     setText(post.text);
@@ -137,9 +152,9 @@ export default function FitnessPage() {
     setEditingIndex(index);
   };
 
-  const handleContextMenu = (e: React.MouseEvent, postIndex: number, imgIndex?: number) => {
+  const handleContextMenu = (e: React.MouseEvent, postIndex: number, imgIndex?: number, videoIndex?: number) => {
     e.preventDefault();
-    setMenu({ x: e.clientX, y: e.clientY, postIndex, imgIndex });
+    setMenu({ x: e.clientX, y: e.clientY, postIndex, imgIndex, videoIndex });
   };
 
   return (
@@ -181,7 +196,7 @@ export default function FitnessPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={{ position: "relative" }}>
-              <video src={v} controls style={styles.video} />
+              <video src={v} controls preload="metadata" playsInline style={styles.video} />
               <span onClick={() => setVideos(videos.filter((_, index) => index !== i))} style={styles.close}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
             </div>
@@ -226,7 +241,14 @@ export default function FitnessPage() {
             ))}
             {(p.videos || []).map((v, i) => (
               <div key={i} style={{ position: "relative" }}>
-                <video src={v} controls style={styles.video} />
+                <video
+                  src={v}
+                  controls
+                  preload="metadata"
+                  playsInline
+                  onContextMenu={(e) => handleContextMenu(e, index, undefined, i)}
+                  style={styles.video}
+                />
                 <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => e.stopPropagation()}>⬇</a>
               </div>
             ))}
@@ -246,6 +268,8 @@ export default function FitnessPage() {
           <div style={styles.menuItem} onClick={() => { handleEdit(menu.postIndex); setMenu(null); }}>✏️ 编辑</div>
           {menu.imgIndex !== undefined ? (
             <div style={styles.menuItem} onClick={() => { deleteImage(menu.postIndex, menu.imgIndex!); setMenu(null); }}>🗑 删除图片</div>
+          ) : menu.videoIndex !== undefined ? (
+            <div style={styles.menuItem} onClick={() => { deleteVideo(menu.postIndex, menu.videoIndex!); setMenu(null); }}>🗑 删除视频</div>
           ) : (
             <div style={styles.menuItem} onClick={() => { deletePost(menu.postIndex); setMenu(null); }}>🗑 删除记录</div>
           )}
@@ -337,8 +361,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   video: {
     width: "240px",
-    height: "180px",
-    objectFit: "cover",
+    maxHeight: "200px",
     borderRadius: "10px",
     background: "#000",
   },
