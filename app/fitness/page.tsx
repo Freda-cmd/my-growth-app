@@ -196,7 +196,7 @@ export default function FitnessPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={{ position: "relative" }}>
-              <video src={v} controls width="320" height="240" preload="auto" playsInline style={styles.video} />
+              <video src={v} controls width="320" height="240" preload="auto" playsInline style={styles.video} onError={(e: any) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} /><div style={{ display: "none", width: 240, height: 180, alignItems: "center", justifyContent: "center", background: "#f5f5f5", borderRadius: 10, flexDirection: "column", gap: 8 }}><span style={{ fontSize: 13, color: "#999" }}>无法预览</span><a href={v} download style={{ fontSize: 12, color: "#7c3aed", textDecoration: "none" }}>⬇ 下载后播放</a></div>
               <span onClick={() => setVideos(videos.filter((_, index) => index !== i))} style={styles.close}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
             </div>
@@ -242,8 +242,7 @@ export default function FitnessPage() {
             {(p.videos || []).map((v, i) => (
               <div key={i} style={{ position: "relative" }}>
                 <video
-                  src={v} controls width="320" height="240" preload="auto" playsInline onContextMenu={(e) => handleContextMenu(e, index, undefined, i)}
-                  style={styles.video}
+                  src={v} controls width="320" height="240" preload="auto" playsInline onContextMenu={(e) => handleContextMenu(e, index, undefined, i)} onError={(e: any) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling.style.display = "flex"; }} style={styles.video} /><div style={{ display: "none", width: 240, height: 180, alignItems: "center", justifyContent: "center", background: "#f5f5f5", borderRadius: 10, flexDirection: "column", gap: 8 }}><span style={{ fontSize: 13, color: "#999" }}>无法预览</span><a href={v} download style={{ fontSize: 12, color: "#7c3aed", textDecoration: "none" }}>⬇ 下载后播放</a>
                 />
                 <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => e.stopPropagation()}>⬇</a>
               </div>
