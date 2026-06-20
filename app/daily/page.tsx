@@ -197,7 +197,7 @@ export default function DailyPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={styles.previewItem}>
-              <a href={v} target="_blank" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>▶</span><span style={{ fontSize: 13, color: "#ccc" }}>点击播放 / 下载</span></a>
+              <a href={v} download style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>⬇</span><span style={{ fontSize: 13, color: "#ccc" }}>点击下载视频</span></a>
               <span onClick={() => setVideos(videos.filter((_, j) => j !== i))} style={styles.closeBtn}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载">⬇</a>
             </div>
@@ -251,7 +251,7 @@ export default function DailyPage() {
             ))}
             {p.videos.map((v, j) => (
               <div key={j} style={styles.previewItem}>
-                <a href={v} target="_blank" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>▶</span><span style={{ fontSize: 13, color: "#ccc" }}>点击播放 / 下载</span></a>
+                <a href={v} download style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>⬇</span><span style={{ fontSize: 13, color: "#ccc" }}>点击下载视频</span></a>
                 <a href={v} download style={styles.downloadBtn} title="下载">⬇</a>
               </div>
             ))}

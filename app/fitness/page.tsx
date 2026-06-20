@@ -196,7 +196,7 @@ export default function FitnessPage() {
           ))}
           {videos.map((v, i) => (
             <div key={i} style={{ position: "relative" }}>
-              <a href={v} target="_blank" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>▶</span><span style={{ fontSize: 13, color: "#ccc" }}>点击播放 / 下载</span></a>
+              <a href={v} href={v} download style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 240, height: 180, background: "#2a2a2a", borderRadius: 10, flexDirection: "column", gap: 8, textDecoration: "none", cursor: "pointer" }}><span style={{ fontSize: 32 }}>⬇</span><span style={{ fontSize: 13, color: "#ccc" }}>点击下载视频</span></a>
               <span onClick={() => setVideos(videos.filter((_, index) => index !== i))} style={styles.close}>×</span>
               <a href={v} download style={styles.downloadBtn} title="下载" onClick={(e: any) => { e.stopPropagation(); }}>⬇</a>
             </div>
